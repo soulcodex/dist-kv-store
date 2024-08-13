@@ -1,0 +1,6 @@
+.env
+.idea
+*.pem
+NOTES.md
+CHALLENGE.md
+.build

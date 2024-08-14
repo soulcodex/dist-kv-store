@@ -11,8 +11,6 @@ import (
 type keyValueStoreFSM InMemoryKeyValueStore
 
 func (fsm *keyValueStoreFSM) Apply(log *raft.Log) interface{} {
-	fsm.logger.Info().Str("entry", string(log.Data)).Msg("Applying log entry")
-
 	var raw map[string]interface{}
 	if err := json.Unmarshal(log.Data, &raw); err != nil {
 		// We should panic given that we are in a critical path, and we should not

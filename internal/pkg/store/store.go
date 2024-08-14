@@ -13,4 +13,6 @@ type Consensus interface {
 	Join(index, nodeAddress string) error
 	Unlink(index string) error
 	Stats() map[string]interface{}
+
+	WaitLeader()
 }

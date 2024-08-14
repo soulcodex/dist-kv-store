@@ -3,6 +3,7 @@ module codesignal
 go 1.22.3
 
 require (
+	github.com/brianvoe/gofakeit/v7 v7.0.4
 	github.com/hashicorp/go-retryablehttp v0.7.7
 	github.com/hashicorp/raft v1.7.0
 	github.com/joho/godotenv v1.5.1

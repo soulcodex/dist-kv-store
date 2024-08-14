@@ -141,6 +141,13 @@ func (iks *InMemoryKeyValueStore) Stats() map[string]interface{} {
 	return stats
 }
 
+func (iks *InMemoryKeyValueStore) WaitLeader() {
+	select {
+	case <-iks.raft.LeaderCh():
+		return
+	}
+}
+
 func (iks *InMemoryKeyValueStore) Get(key string) (string, error) {
 	iks.mutex.Lock()
 	defer iks.mutex.Unlock()

@@ -44,6 +44,12 @@ make slave-node-1
 make slave-node-2
 ```
 
+5. To run benchmarks, run the following command:
+
+```shell
+make run-benchmark
+```
+
 If errors during the process
 
 ```shell

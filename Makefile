@@ -43,3 +43,8 @@ slave-node-1: ## Attach an slave-2 node to the master node
 .PHONY: slave-node-2
 slave-node-2: ## Attach an slave-3 node to the master node
 	@make -s .node-3
+
+## Benchmark commands
+.PHONY: run-benchmark
+run-benchmark: ## Run a benchmark tests over the store
+	go test ./tests -bench=. -count=5 -run=^#

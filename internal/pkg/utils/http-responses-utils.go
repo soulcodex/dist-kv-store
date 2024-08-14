@@ -1,24 +1,14 @@
 package utils
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"context"
 	"github.com/rs/zerolog"
 )
 
-func MarshalResponseFromMap(content map[string]interface{}) ([]byte, error) {
-	response, err := json.Marshal(content)
-	if err != nil {
-		return nil, err
-	}
-
-	return response, nil
-}
-
 func WriteHttpBadRequestResponse(ctx context.Context, content map[string]interface{}, log zerolog.Logger, w http.ResponseWriter) {
-	response, err := MarshalResponseFromMap(content)
+	response, err := MarshalFromMap(content)
 	if err != nil {
 		log.Error().Err(err).Ctx(ctx).AnErr("Error marshalling json response", err)
 		return
@@ -31,7 +21,7 @@ func WriteHttpBadRequestResponse(ctx context.Context, content map[string]interfa
 }
 
 func WriteHttpOkResponse(ctx context.Context, content map[string]interface{}, log zerolog.Logger, w http.ResponseWriter) {
-	response, err := MarshalResponseFromMap(content)
+	response, err := MarshalFromMap(content)
 	if err != nil {
 		log.Error().Err(err).Ctx(ctx).AnErr("Error marshalling json response", err)
 		return
@@ -42,7 +32,7 @@ func WriteHttpOkResponse(ctx context.Context, content map[string]interface{}, lo
 }
 
 func WriteHttpConflictResponse(ctx context.Context, content map[string]interface{}, log zerolog.Logger, w http.ResponseWriter) {
-	response, err := MarshalResponseFromMap(content)
+	response, err := MarshalFromMap(content)
 	if err != nil {
 		log.Error().Err(err).Ctx(ctx).AnErr("Error marshalling json response", err)
 		return
@@ -53,7 +43,7 @@ func WriteHttpConflictResponse(ctx context.Context, content map[string]interface
 }
 
 func WriteHttpNotFoundError(ctx context.Context, content map[string]interface{}, err error, log zerolog.Logger, w http.ResponseWriter) {
-	response, marshalErr := MarshalResponseFromMap(content)
+	response, marshalErr := MarshalFromMap(content)
 	if marshalErr != nil {
 		log.Error().Err(marshalErr).Ctx(ctx).AnErr("Error marshalling json response", err)
 		return
@@ -66,7 +56,7 @@ func WriteHttpNotFoundError(ctx context.Context, content map[string]interface{},
 }
 
 func WriteHttpInternalServerError(ctx context.Context, err error, log zerolog.Logger, w http.ResponseWriter) {
-	response, marshalErr := MarshalResponseFromMap(map[string]interface{}{
+	response, marshalErr := MarshalFromMap(map[string]interface{}{
 		"message": "An unexpected error ocurred",
 	})
 

@@ -67,33 +67,3 @@ func (dc DeleteCmd) ToMap() map[string]interface{} {
 		"key": dc.Key,
 	}
 }
-
-type JoinCmd struct {
-	Cmd
-	NodeId  string
-	Address string
-}
-
-func NewJoinCmd(id, address string) JoinCmd {
-	return JoinCmd{
-		Cmd:     Join,
-		NodeId:  id,
-		Address: address,
-	}
-}
-
-func NewJoinCmdFromMap(cmd map[string]interface{}) JoinCmd {
-	return JoinCmd{
-		Cmd:     Delete,
-		NodeId:  cmd["id"].(string),
-		Address: cmd["address"].(string),
-	}
-}
-
-func (dc JoinCmd) ToMap() map[string]interface{} {
-	return map[string]interface{}{
-		"cmd":     dc.Cmd,
-		"id":      dc.NodeId,
-		"address": dc.Address,
-	}
-}

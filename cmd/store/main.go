@@ -35,8 +35,10 @@ func main() {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
 
-	nodeJoiner := store.NewRetryableHttpNodeJoiner(di.BuildNodeJoinRetryableHttpClient())
-	node := store.NewNode(*nodeId, *nodeName, *replicationAddress, joinAddr, nodeJoiner)
+	retryableClient := di.BuildNodeJoinRetryableHttpClient()
+	nodeJoiner := store.NewRetryableHttpNodeJoiner(retryableClient.StandardClient())
+	nodeUnlinker := store.NewRetryableHttpNodeUnlinker(retryableClient.StandardClient())
+	node := store.NewNode(*nodeId, *nodeName, *replicationAddress, joinAddr, nodeJoiner, nodeUnlinker)
 
 	peerConfig := config.NewPeerConfig(defaultAddress, *httpPort, node)
 	container := di.Init(peerConfig)
@@ -66,5 +68,9 @@ func main() {
 
 	if err := container.Services.HttpServer.Run(signals); err != nil {
 		container.Services.Log.Error().Err(err).Ctx(context).Msg("Error starting server")
+	}
+
+	if err := container.Config.NodeConfig.Unlink(); err != nil {
+		container.Services.Log.Error().Err(err).Ctx(context).Msg("Error unlinking replica node")
 	}
 }

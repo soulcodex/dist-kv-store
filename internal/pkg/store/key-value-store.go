@@ -66,8 +66,6 @@ func (iks *InMemoryKeyValueStore) Bootstrap(n Node) error {
 }
 
 func (iks *InMemoryKeyValueStore) Join(nodeId, nodeAddress string) error {
-	cmd := NewJoinCmd(nodeId, nodeAddress)
-
 	config := iks.raft.GetConfiguration()
 	if err := config.Error(); err != nil {
 		return err
@@ -79,8 +77,8 @@ func (iks *InMemoryKeyValueStore) Join(nodeId, nodeAddress string) error {
 				iks.logger.Warn().
 					Int64("node_id", iks.node.Index).
 					Str("node_name", iks.node.Name).
-					Str("ignored_node_id", cmd.NodeId).
-					Str("ignored_address", cmd.Address).
+					Str("ignored_node_id", nodeId).
+					Str("ignored_address", nodeAddress).
 					Msg("node is already cluster member")
 				return nil
 			}
@@ -92,7 +90,7 @@ func (iks *InMemoryKeyValueStore) Join(nodeId, nodeAddress string) error {
 		}
 	}
 
-	addOp := iks.raft.AddVoter(raft.ServerID(cmd.NodeId), raft.ServerAddress(cmd.Address), 0, 0)
+	addOp := iks.raft.AddVoter(raft.ServerID(nodeId), raft.ServerAddress(nodeAddress), 0, 0)
 	if err := addOp.Error(); err != nil {
 		return err
 	}
@@ -100,9 +98,35 @@ func (iks *InMemoryKeyValueStore) Join(nodeId, nodeAddress string) error {
 	iks.logger.Warn().
 		Int64("node_id", iks.node.Index).
 		Str("node_name", iks.node.Name).
-		Str("joined_id", cmd.NodeId).
-		Str("joined_address", cmd.Address).
+		Str("joined_id", nodeId).
+		Str("joined_address", nodeAddress).
 		Msg("node joined successfully")
+
+	return nil
+}
+
+func (iks *InMemoryKeyValueStore) Unlink(index string) error {
+	config := iks.raft.GetConfiguration()
+	if err := config.Error(); err != nil {
+		return err
+	}
+
+	for _, server := range config.Configuration().Servers {
+		if server.ID == raft.ServerID(index) && server.ID != raft.ServerID(iks.node.NodeIdString()) {
+			future := iks.raft.RemoveServer(server.ID, 0, 0)
+			if err := future.Error(); err != nil {
+				return err
+			}
+
+			iks.logger.Warn().
+				Int64("node_id", iks.node.Index).
+				Str("node_name", iks.node.Name).
+				Str("unlinked_id", index).
+				Msg("node unlinked successfully")
+
+			return nil
+		}
+	}
 
 	return nil
 }

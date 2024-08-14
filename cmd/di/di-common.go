@@ -62,9 +62,9 @@ func bootstrapApp(configuration *config.Config) *OktaDistributedKeyValueStorageC
 
 func BuildNodeJoinRetryableHttpClient() *retryablehttp.Client {
 	client := retryablehttp.NewClient()
-	client.RetryMax = 5
-	client.RetryWaitMin = 5 * time.Second
-	client.RetryWaitMax = 10 * time.Second
+	client.RetryMax = 3
+	client.RetryWaitMin = 3 * time.Second
+	client.RetryWaitMax = 6 * time.Second
 
 	return client
 }

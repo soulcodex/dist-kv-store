@@ -11,5 +11,6 @@ type KeyValueStore interface {
 type Consensus interface {
 	Bootstrap(n Node) error
 	Join(index, nodeAddress string) error
+	Unlink(index string) error
 	Stats() map[string]interface{}
 }

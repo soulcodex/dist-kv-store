@@ -56,5 +56,6 @@ func (sm *StoreServices) RegisterHttpRoutes(router *httprouter.Router, srv *Comm
 
 	// Raft handlers
 	router.HandlerFunc(http.MethodPost, "/join", store.NodeRaftJoinHttpHandler(srv.KeyValueStore.Consensus(), srv.Log))
+	router.HandlerFunc(http.MethodPost, "/unlink", store.NodeRaftUnlinkHttpHandler(srv.KeyValueStore.Consensus(), srv.Log))
 	router.HandlerFunc(http.MethodGet, "/stats", store.NodeRaftStatsHttpHandler(srv.KeyValueStore.Consensus(), srv.Log))
 }

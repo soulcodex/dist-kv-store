@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/hashicorp/go-retryablehttp"
+	"net/http"
 )
 
 type NodeJoiner func(n Node) error
 
-func NewRetryableHttpNodeJoiner(client *retryablehttp.Client) NodeJoiner {
+func NewRetryableHttpNodeJoiner(client *http.Client) NodeJoiner {
 	return func(n Node) error {
 		body, err := json.Marshal(map[string]interface{}{"address": n.Replication.Address, "id": n.NodeIdString()})
 		if err != nil {

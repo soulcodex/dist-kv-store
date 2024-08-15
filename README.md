@@ -23,6 +23,11 @@ In Mac OS X is as easy as executing [Brew](https://brew.sh/): `brew install rpcb
 go mod tidy
 ```
 
+*If errors during the process, try to run the following command:*
+
+```shell
+go mod tidy -compat=1.22
+```
 
 2. Prepare the environment to be able to run
 
@@ -50,8 +55,8 @@ make slave-node-2
 make run-benchmark
 ```
 
-If errors during the process
+6. To run acceptance tests, run the following command:
 
 ```shell
-go mod tidy -compat=1.22
+make run-acceptance-tests
 ```

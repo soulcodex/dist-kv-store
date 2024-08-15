@@ -1,8 +1,6 @@
 package storeinfrastructure
 
 import (
-	"strconv"
-
 	"codesignal/internal/pkg/store"
 	domain "codesignal/internal/store/domain"
 )
@@ -23,12 +21,7 @@ func (isr *InMemoryStoreItemRepository) FindByKey(key domain.StoreKey) (*domain.
 		return nil, domain.NewStoreItemNotExistsWithKey(key.String())
 	}
 
-	val, err := strconv.Unquote(item)
-	if err != nil {
-		return nil, domain.NewStoreItemNotExistsWithKey(key.String())
-	}
-
-	return domain.NewStoreItem(key, domain.StoreValue(val)), nil
+	return domain.NewStoreItem(key, domain.StoreValue(item)), nil
 }
 
 func (isr *InMemoryStoreItemRepository) Store(si *domain.StoreItem) error {

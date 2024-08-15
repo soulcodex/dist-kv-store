@@ -5,9 +5,6 @@ help: ## Display this help screen
 	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 ## Nodes bootstrap commands
-.healthcheck: ## Check health of the cluster
-	curl --write-out "%{http_code}\n" --silent --output /dev/null "$URL"
-
 .node-1: ## Run node 1
 	[ -f ./.build/store ] || make -s setup
 	./.build/store -node-id=1 -http-port=8085 -replication-addr="127.0.0.1:12000"
@@ -44,7 +41,12 @@ slave-node-1: ## Attach an slave-2 node to the master node
 slave-node-2: ## Attach an slave-3 node to the master node
 	@make -s .node-3
 
+## Acceptance tests commands
+.PHONY: run-acceptance-tests
+run-acceptance-tests: ## Run acceptance tests over the store
+	go test ./tests/store -v
+
 ## Benchmark commands
 .PHONY: run-benchmark
 run-benchmark: ## Run a benchmark tests over the store
-	go test ./tests -bench=. -count=5 -run=^#
+	go test ./tests/store -bench=. -count=5 -run=^# -v

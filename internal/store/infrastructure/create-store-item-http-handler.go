@@ -14,8 +14,20 @@ import (
 )
 
 type CreateStoreItemRequest struct {
-	key   string
-	value interface{}
+	Key   string
+	Value interface{}
+}
+
+func (csr *CreateStoreItemRequest) IsValid() error {
+	if csr.Key == "" {
+		return errors.New("store item key is required")
+	}
+
+	if csr.Value == nil || csr.Value == "" {
+		return errors.New("store item value is required")
+	}
+
+	return nil
 }
 
 type CreateStoreItemHttpHandler struct {
@@ -35,7 +47,13 @@ func (csi *CreateStoreItemHttpHandler) Handle(w http.ResponseWriter, req *http.R
 		return
 	}
 
-	cmd := &application.CreateStoreItemCommand{Key: body.key, Value: body.value}
+	if bodyErr := body.IsValid(); bodyErr != nil {
+		response := map[string]interface{}{"message": bodyErr.Error()}
+		utils.WriteHttpBadRequestResponse(req.Context(), response, csi.log, w)
+		return
+	}
+
+	cmd := &application.CreateStoreItemCommand{Key: body.Key, Value: body.Value}
 	err = csi.handler.Handle(cmd)
 
 	switch err.(type) {
@@ -71,7 +89,7 @@ func (csi *CreateStoreItemHttpHandler) requestOrError(req *http.Request) (*Creat
 	}
 
 	return &CreateStoreItemRequest{
-		key:   key,
-		value: contentByKey,
+		Key:   key,
+		Value: contentByKey,
 	}, nil
 }

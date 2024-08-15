@@ -5,7 +5,6 @@ type Cmd string
 const (
 	Set    Cmd = "SET"
 	Delete Cmd = "DELETE"
-	Join   Cmd = "JOIN"
 )
 
 func (c Cmd) String() string {

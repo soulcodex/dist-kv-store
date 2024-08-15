@@ -3,6 +3,7 @@ package storeapplication
 import (
 	"encoding/json"
 
+	"codesignal/internal/pkg/utils"
 	domain "codesignal/internal/store/domain"
 )
 
@@ -25,16 +26,27 @@ func (csh *CreateStoreItemCommandHandler) Handle(cmd *CreateStoreItemCommand) er
 		return err
 	}
 
-	rawContent, err := json.Marshal(cmd.Value)
-	if err != nil {
-		return err
+	var item *domain.StoreItem
+	if ok := utils.ValueIsStringOrNumeric(cmd.Value); !ok {
+		marshalled, marshalErr := json.Marshal(cmd.Value)
+		if marshalErr != nil {
+			return marshalErr
+		}
+
+		sv, svErr := domain.NewStoreValue(marshalled)
+		if svErr != nil {
+			return svErr
+		}
+
+		item = domain.NewStoreItem(key, sv)
+	} else {
+		sv, svErr := domain.NewStoreValue([]byte(cmd.Value.(string)))
+		if svErr != nil {
+			return svErr
+		}
+
+		item = domain.NewStoreItem(key, sv)
 	}
 
-	content, err := domain.NewStoreValue(rawContent)
-	if err != nil {
-		return err
-	}
-
-	item := domain.NewStoreItem(key, content)
 	return csh.repository.Store(item)
 }

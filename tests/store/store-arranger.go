@@ -1,32 +1,34 @@
-package tests
+package storetest
 
 import (
 	"fmt"
 	"github.com/brianvoe/gofakeit/v7"
-	"net"
+	"github.com/julienschmidt/httprouter"
 	"strconv"
+	"testing"
 
 	"codesignal/cmd/di"
 	"codesignal/internal/pkg/config"
 	"codesignal/internal/pkg/store"
+	"codesignal/tests"
 )
 
-func getFreePort() (int, error) {
-	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
+func storeModuleRouter() tests.HttpTestRouterFactory {
+	return func(di *di.OktaDistributedKeyValueStorageContainer) *httprouter.Router {
+		router := httprouter.New()
+		di.StoreServices.RegisterHttpRoutes(router, di.Services)
+
+		return router
+	}
+}
+
+func setupStore(t *testing.T) (*di.OktaDistributedKeyValueStorageContainer, *httprouter.Router) {
+	container, err := bootstrapSingleNodeCluster()
 	if err != nil {
-		return 0, err
+		t.Fatal(err)
 	}
 
-	l, err := net.ListenTCP("tcp", addr)
-	if err != nil {
-		return 0, err
-	}
-
-	defer func() {
-		_ = l.Close()
-	}()
-
-	return l.Addr().(*net.TCPAddr).Port, nil
+	return container, storeModuleRouter()(container)
 }
 
 func joinerAndUnlinker() (store.NodeJoiner, store.NodeUnlinker) {
@@ -36,7 +38,7 @@ func joinerAndUnlinker() (store.NodeJoiner, store.NodeUnlinker) {
 	return joiner, unlinker
 }
 
-func bootstrapCluster(nodeContainer *di.OktaDistributedKeyValueStorageContainer) error {
+func bootstrapClusterLeader(nodeContainer *di.OktaDistributedKeyValueStorageContainer) error {
 	if err := nodeContainer.Services.KeyValueStore.Consensus().Bootstrap(nodeContainer.Config.NodeConfig); err != nil {
 		return err
 	}
@@ -58,8 +60,8 @@ func fillStoreWithElements(store store.KeyValueStore, prefix string, times int) 
 }
 
 func bootstrapSingleNodeCluster() (*di.OktaDistributedKeyValueStorageContainer, error) {
-	serverPort, _ := getFreePort()
-	replicationPort, _ := getFreePort()
+	serverPort, _ := tests.GetFreeTCPPort()
+	replicationPort, _ := tests.GetFreeTCPPort()
 
 	joiner, unlinker := joinerAndUnlinker()
 	node := store.NewNode(1, "node", fmt.Sprintf("localhost:%d", replicationPort), nil, joiner, unlinker)
@@ -67,7 +69,7 @@ func bootstrapSingleNodeCluster() (*di.OktaDistributedKeyValueStorageContainer, 
 
 	container := di.Init(peerConfig)
 
-	if err := bootstrapCluster(container); err != nil {
+	if err := bootstrapClusterLeader(container); err != nil {
 		return nil, err
 	}
 

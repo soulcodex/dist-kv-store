@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/hashicorp/go-hclog"
 	"os"
 	"os/signal"
 	"syscall"
@@ -38,7 +39,7 @@ func main() {
 	retryableClient := di.BuildNodeJoinRetryableHttpClient()
 	nodeJoiner := store.NewRetryableHttpNodeJoiner(retryableClient.StandardClient())
 	nodeUnlinker := store.NewRetryableHttpNodeUnlinker(retryableClient.StandardClient())
-	node := store.NewNode(*nodeId, *nodeName, *replicationAddress, joinAddr, nodeJoiner, nodeUnlinker)
+	node := store.NewNode(*nodeId, *nodeName, hclog.Warn.String(), *replicationAddress, joinAddr, nodeJoiner, nodeUnlinker)
 
 	peerConfig := config.NewPeerConfig(defaultAddress, *httpPort, node)
 	container := di.Init(peerConfig)

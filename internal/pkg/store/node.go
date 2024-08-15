@@ -23,6 +23,7 @@ func (r *Replication) MarkAsUnlinked() {
 type Node struct {
 	Index       int64
 	Name        string
+	LogLevel    string
 	Replication *Replication
 	Joiner      NodeJoiner
 	Unlinker    NodeUnlinker
@@ -31,6 +32,7 @@ type Node struct {
 func NewNode(
 	index int64,
 	name string,
+	logLevel string,
 	replicaAddr string,
 	joinAddress *string,
 	joiner NodeJoiner,
@@ -45,6 +47,7 @@ func NewNode(
 		Index:    index,
 		Name:     name,
 		Joiner:   joiner,
+		LogLevel: logLevel,
 		Unlinker: unlinker,
 		Replication: &Replication{
 			Joined:      false,

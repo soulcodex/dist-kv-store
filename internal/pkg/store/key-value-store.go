@@ -13,7 +13,7 @@ import (
 )
 
 type InMemoryKeyValueStore struct {
-	mutex  sync.Mutex
+	mutex  sync.RWMutex
 	items  map[string]string
 	logger zerolog.Logger
 
@@ -25,7 +25,7 @@ type InMemoryKeyValueStore struct {
 
 func NewInMemoryKeyValueStore(logger zerolog.Logger, n Node) *InMemoryKeyValueStore {
 	return &InMemoryKeyValueStore{
-		mutex:          sync.Mutex{},
+		mutex:          sync.RWMutex{},
 		items:          make(map[string]string),
 		logger:         logger,
 		node:           n,
@@ -149,8 +149,8 @@ func (iks *InMemoryKeyValueStore) WaitLeader() {
 }
 
 func (iks *InMemoryKeyValueStore) Get(key string) (string, error) {
-	iks.mutex.Lock()
-	defer iks.mutex.Unlock()
+	iks.mutex.RLock()
+	defer iks.mutex.RUnlock()
 
 	if value, ok := iks.items[key]; ok {
 		return value, nil
@@ -169,7 +169,7 @@ func (iks *InMemoryKeyValueStore) Set(key string, value string) error {
 		return err
 	}
 
-	f := iks.raft.Apply(cmd, iks.raftTimeout)
+	f := iks.raft.Apply(cmd, 10*time.Second)
 	return f.Error()
 }
 
@@ -183,6 +183,6 @@ func (iks *InMemoryKeyValueStore) Delete(key string) error {
 		return err
 	}
 
-	f := iks.raft.Apply(cmd, iks.raftTimeout)
+	f := iks.raft.Apply(cmd, 10*time.Second)
 	return f.Error()
 }

@@ -6,21 +6,31 @@ import (
 	"testing"
 )
 
-func BenchmarkSetStoreItemOperation(b *testing.B) {
+func BenchmarkSetStoreItemOperationWithEmptyStore(b *testing.B) {
 	node, err := bootstrapSingleNodeCluster()
 	if err != nil {
 		b.Fatal(err)
 	}
 
-	b.Run("Set elements at store when is empty", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			_ = node.Services.KeyValueStore.Set(fmt.Sprintf("api_key_v1_%d", i), gofakeit.BitcoinAddress())
-		}
-	})
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = node.Services.KeyValueStore.Set(fmt.Sprintf("api_key_v1_%d", i), gofakeit.BitcoinAddress())
+	}
+}
 
-	b.Run("Set elements at store when is not empty", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			_ = node.Services.KeyValueStore.Set(fmt.Sprintf("api_key_v2_%d", i), gofakeit.BitcoinAddress())
-		}
-	})
+func BenchmarkSetStoreItemOperationWithNotEmptyStore(b *testing.B) {
+	node, err := bootstrapSingleNodeCluster()
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	err = fillStoreWithElements(node.Services.KeyValueStore, "api_key_v", 50)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = node.Services.KeyValueStore.Set(fmt.Sprintf("api_key_v2_%d", i), gofakeit.BitcoinAddress())
+	}
 }

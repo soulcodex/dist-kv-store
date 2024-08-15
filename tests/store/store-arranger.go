@@ -3,6 +3,7 @@ package storetest
 import (
 	"fmt"
 	"github.com/brianvoe/gofakeit/v7"
+	"github.com/hashicorp/go-hclog"
 	"github.com/julienschmidt/httprouter"
 	"strconv"
 	"testing"
@@ -64,7 +65,7 @@ func bootstrapSingleNodeCluster() (*di.OktaDistributedKeyValueStorageContainer, 
 	replicationPort, _ := tests.GetFreeTCPPort()
 
 	joiner, unlinker := joinerAndUnlinker()
-	node := store.NewNode(1, "node", fmt.Sprintf("localhost:%d", replicationPort), nil, joiner, unlinker)
+	node := store.NewNode(1, "node", hclog.Off.String(), fmt.Sprintf("localhost:%d", replicationPort), nil, joiner, unlinker)
 	peerConfig := config.NewPeerConfig("0.0.0.0", int64(serverPort), node)
 
 	container := di.Init(peerConfig)

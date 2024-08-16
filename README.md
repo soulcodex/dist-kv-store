@@ -1,11 +1,11 @@
 <table align="center">
-    <tr style="text-align: center;">
+    <tr style="text-align: center; border-bottom: transparent">
         <td align="center" width="9999">
- <h1 style="color: black; margin-top: 0">Distributed Key Value Store</h1>
-
-<p style="color: black">A distributed key-value store implementation using the raft consensus algorithm.</p>
-</td>
-</tr>
+            <img src="./etc/raft-diagram.png" width="450px" alt="Project icon" style="margin: 10px auto; display: block">
+            <h1 style="color: black; margin-top: 0">Distributed Key Value Store</h1>
+            <p style="color: black">A distributed key-value store implementation using the raft consensus algorithm.</p>
+        </td>
+    </tr>
 </table>
 
 You need to have **Go v1.22.3** installed in your machine.

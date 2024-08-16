@@ -21,17 +21,17 @@ type CommonServices struct {
 	KeyValueStore store.KeyValueStore
 }
 
-type OktaDistributedKeyValueStorageContainer struct {
+type DistributedKeyValueStoreContainer struct {
 	Services      *CommonServices
 	Config        *config.Config
 	StoreServices *StoreServices
 }
 
-func Init(configuration *config.Config) *OktaDistributedKeyValueStorageContainer {
+func Init(configuration *config.Config) *DistributedKeyValueStoreContainer {
 	return bootstrapApp(configuration)
 }
 
-func bootstrapApp(configuration *config.Config) *OktaDistributedKeyValueStorageContainer {
+func bootstrapApp(configuration *config.Config) *DistributedKeyValueStoreContainer {
 	logger := zerolog.New(os.Stderr).
 		Level(zerolog.DebugLevel).
 		With().
@@ -53,7 +53,7 @@ func bootstrapApp(configuration *config.Config) *OktaDistributedKeyValueStorageC
 	storeModule := InitStoreModule(services)
 	storeModule.RegisterHttpRoutes(httpRouter, services)
 
-	return &OktaDistributedKeyValueStorageContainer{
+	return &DistributedKeyValueStoreContainer{
 		Services:      services,
 		Config:        configuration,
 		StoreServices: storeModule,

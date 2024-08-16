@@ -15,7 +15,7 @@ import (
 )
 
 func storeModuleRouter() tests.HttpTestRouterFactory {
-	return func(di *di.OktaDistributedKeyValueStorageContainer) *httprouter.Router {
+	return func(di *di.DistributedKeyValueStoreContainer) *httprouter.Router {
 		router := httprouter.New()
 		di.StoreServices.RegisterHttpRoutes(router, di.Services)
 
@@ -23,7 +23,7 @@ func storeModuleRouter() tests.HttpTestRouterFactory {
 	}
 }
 
-func setupStore(t *testing.T) (*di.OktaDistributedKeyValueStorageContainer, *httprouter.Router) {
+func setupStore(t *testing.T) (*di.DistributedKeyValueStoreContainer, *httprouter.Router) {
 	container, err := bootstrapSingleNodeCluster()
 	if err != nil {
 		t.Fatal(err)
@@ -39,7 +39,7 @@ func joinerAndUnlinker() (store.NodeJoiner, store.NodeUnlinker) {
 	return joiner, unlinker
 }
 
-func bootstrapClusterLeader(nodeContainer *di.OktaDistributedKeyValueStorageContainer) error {
+func bootstrapClusterLeader(nodeContainer *di.DistributedKeyValueStoreContainer) error {
 	if err := nodeContainer.Services.KeyValueStore.Consensus().Bootstrap(nodeContainer.Config.NodeConfig); err != nil {
 		return err
 	}
@@ -60,7 +60,7 @@ func fillStoreWithElements(store store.KeyValueStore, prefix string, times int) 
 	return nil
 }
 
-func bootstrapSingleNodeCluster() (*di.OktaDistributedKeyValueStorageContainer, error) {
+func bootstrapSingleNodeCluster() (*di.DistributedKeyValueStoreContainer, error) {
 	serverPort, _ := tests.GetFreeTCPPort()
 	replicationPort, _ := tests.GetFreeTCPPort()
 

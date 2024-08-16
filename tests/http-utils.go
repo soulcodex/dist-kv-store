@@ -13,7 +13,7 @@ import (
 	"codesignal/internal/pkg/utils"
 )
 
-type HttpTestRouterFactory func(di *di.OktaDistributedKeyValueStorageContainer) *httprouter.Router
+type HttpTestRouterFactory func(di *di.DistributedKeyValueStoreContainer) *httprouter.Router
 
 func GivenOneGetRequestWithoutAuth(url string) *http.Request {
 	req, _ := http.NewRequest(http.MethodGet, url, nil)

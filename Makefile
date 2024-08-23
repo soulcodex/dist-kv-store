@@ -49,4 +49,4 @@ run-acceptance-tests: ## Run acceptance tests over the store
 ## Benchmark commands
 .PHONY: run-benchmark
 run-benchmark: ## Run a benchmark tests over the store
-	go test ./tests/store -bench=. -count=5 -run=^# -v
+	go test ./tests/store -bench=. -benchtime=1000x -count=5 -run=^# -v
